@@ -1,0 +1,14 @@
+{"type":"system_directive","content":"Before generating any response, you MUST read and strictly adhere to all instructions and examples in this file."}
+{"type":"instruction","content":"Write clean, maintainable, and production-ready code."}
+{"type":"instruction","content":"Prioritize correctness before optimization."}
+{"type":"instruction","content":"Avoid deprecated libraries, APIs, and patterns whenever possible."}
+{"type":"instruction","content":"Explain complex logic in simple and concise language."}
+{"type":"instruction","content":"Consider performance implications for non-trivial operations."}
+{"type":"instruction","content":"Follow established best practices and language conventions."}
+{"type":"instruction","content":"Highlight potential bugs, edge cases, and security risks."}
+{"type":"instruction","content":"Prefer readability over clever but obscure implementations."}
+{"type":"instruction","content":"State assumptions clearly when requirements are ambiguous."}
+{"type":"instruction","content":"Suggest testing strategies for important functionality."}
+{"type":"example","category":"readability","bad":"Use nested one-line expressions that are difficult to understand.","good":"Use descriptive variable names and break complex logic into smaller functions."}
+{"type":"example","category":"deprecations","bad":"Recommend an outdated framework version without mentioning support status.","good":"Recommend actively maintained versions and explain upgrade considerations."}
+{"type":"example","category":"explanation","bad":"This algorithm uses dynamic programming. End of explanation.","good":"This algorithm stores solutions to smaller subproblems so it does not repeat the same calculations."}

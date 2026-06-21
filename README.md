@@ -22,6 +22,7 @@
 - 🛠️ **Local Execution Environment**: Agents can autonomously write files, execute shell commands, and navigate browser instances using Puppeteer.
 - 📱 **Telegram-Native Interface**: Manage complex code generation and system queries directly from your phone.
 - 🚀 **CLI-First**: Powerful terminal application for power users.
+- ✍️ **Dynamic Personas**: JSONL-based `writing-assistant` module to swap agent personalities and strict instruction sets on the fly.
 
 ---
 
@@ -35,6 +36,13 @@ VENOM coordinates specific models for dedicated tasks to maximize efficiency and
 | **PlanningAgent** | OpenRouter | NVIDIA Nemotron Ultra | Architecture, task decomposition |
 | **CodingAgent** | NVIDIA NIM | Kimi K2.6 (Moonshot) | Code generation, refactoring, execution |
 | **MultiPurposeAgent**| Groq | Llama 70B Versatile | Validation, synthesis, technical review |
+
+### ⚡ Next-Gen Routing & MCP Integration (Upcoming)
+
+To maximize resource efficiency and decoupling, VENOM is evolving its architecture:
+- **Zero-Shot Intent Routing:** Bypassing heavy LLM inferences by using lightning-fast local embeddings to classify user intent (`Chat`, `Code`, `System`) in milliseconds before spinning up the orchestration layer.
+- **Lazy Context Hydration:** The massive 4-tier memory is only loaded into the prompt context *after* the Router determines it is absolutely necessary.
+- **Model Context Protocol (MCP):** Transitioning heavy tools (like Puppeteer and Shell execution) into isolated, lazy-loaded MCP servers. Tool schemas are fetched dynamically on-demand, keeping the Main Agent's context window pristine and token costs minimal.
 
 ---
 
@@ -121,6 +129,14 @@ Interact with your bot on Telegram using these commands:
 - `/fable5`: Activates **Full Agent Mode**. Planners, Coders, and Validators are spun up to decompose and execute complex tasks dynamically.
 - `/fablefoff`: Activates **Direct Mode**. Only the Main Agent responds, skipping the orchestration layer for maximum speed.
 - `think=gs`: Append this to any message to enable execution telemetry, allowing you to see the Router, Planner, and Coordinator states in real-time.
+
+### Writing Assistant & Personas
+
+VENOM includes a structured persona system located in the `writing-assistant/` directory. By loading these `.jsonl` files, agents dynamically adopt specific roles, rules, and tones before generating responses:
+- `instructions.jsonl` (General natural writing)
+- `coding_assistant.jsonl`
+- `customer_support.jsonl`
+- `marketing_copywriter.jsonl`
 
 ### Package API
 
