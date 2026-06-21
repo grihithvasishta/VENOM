@@ -1,0 +1,57 @@
+{
+  "name": "venom",
+  "version": "1.0.0",
+  "description": "VENOM - A production-grade AI operating system.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "venom": "./dist/cli/venom.js"
+  },
+  "files": [
+    "dist",
+    "assets",
+    ".env.example",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/venom.ts",
+    "start": "node dist/cli/venom.js",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "prepare": "npm run build",
+    "prepack": "npm run build"
+  },
+  "license": "MIT",
+  "keywords": [
+    "venom",
+    "ai",
+    "agents",
+    "orchestration",
+    "telegram",
+    "cli"
+  ],
+  "dependencies": {
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "groq-sdk": "^0.4.0",
+    "openai": "^4.52.0",
+    "puppeteer": "^22.12.0",
+    "telegraf": "^4.16.3",
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
