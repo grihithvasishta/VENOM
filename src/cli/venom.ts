@@ -91,7 +91,15 @@ const startChat = async (mode: AgentMode = AgentMode.NORMAL) => {
             else orchestrator.telemetry.disableThinking();
 
             try {
-                const response = await orchestrator.execute(input.replace('think=gs','').trim(), mode);
+                let currentMode = mode;
+                let finalInput = input.replace('think=gs','').trim();
+                
+                if (finalInput.startsWith('/write ')) {
+                    currentMode = AgentMode.WRITE;
+                    finalInput = finalInput.replace('/write ', '').trim();
+                }
+
+                const response = await orchestrator.execute(finalInput, currentMode);
                 console.log(`\nVENOM: ${response}`);
             } catch (e: any) {
                 console.error(`\nError: ${e.message}`);

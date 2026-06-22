@@ -28,6 +28,29 @@ export class VenomTelegramGateway {
             ctx.reply('VENOM Direct Mode activated. Subagents inactive. Maximum response speed.');
         });
 
+        this.bot.command('write', async (ctx) => {
+            try {
+                const text = ctx.message.text || '';
+                const input = text.replace(/^\/write\s*/i, '').replace('think=gs', '').trim();
+                
+                if (text.includes('think=gs')) {
+                    this.orchestrator.telemetry.enableThinking();
+                } else {
+                    this.orchestrator.telemetry.disableThinking();
+                }
+
+                if (!input) {
+                    await ctx.reply('Please provide text after /write. Example: /write explain the internet');
+                    return;
+                }
+
+                const response = await this.orchestrator.execute(input, AgentMode.WRITE);
+                await this.replyInChunks(ctx, response);
+            } catch (error: any) {
+                await this.replyInChunks(ctx, `Error executing task: ${error.message}`);
+            }
+        });
+
         this.bot.on('text', async (ctx) => {
             try {
                 // Determine if we need to enable telemetry for this request

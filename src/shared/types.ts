@@ -1,7 +1,8 @@
 export enum AgentMode {
   NORMAL = 'NORMAL',
   FABLE5 = 'FABLE5', // Full Agent Mode
-  FABLEFOFF = 'FABLEFOFF' // Direct Mode
+  FABLEFOFF = 'FABLEFOFF', // Direct Mode
+  WRITE = 'WRITE' // Writing Mode
 }
 
 export interface VenomMessage {
