@@ -1,17 +1,3 @@
-export class VenomTelemetry {
-    private isThinkingEnabled = false;
-
-    enableThinking() {
-        this.isThinkingEnabled = true;
-    }
-
-    disableThinking() {
-        this.isThinkingEnabled = false;
-    }
-
-    logStage(stage: string, message: string) {
-        if (this.isThinkingEnabled) {
-            console.log(`[${stage}]\n${message}\n`);
-        }
-    }
-}
+/** @deprecated — moved to orchestration/telemetry/VenomTelemetry.ts */
+export { VenomTelemetry } from '../../../orchestration/telemetry/VenomTelemetry';
+export type { VenomTelemetryEvent } from '../../../orchestration/telemetry/VenomTelemetry';

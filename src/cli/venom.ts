@@ -14,7 +14,7 @@ import { VenomWorkingMemory } from '../memory/VenomWorkingMemory';
 import { VenomShellRuntime } from '../tools/VenomShellRuntime';
 import { VenomTelegramGateway } from '../telegram/VenomTelegramGateway';
 import { AgentMode } from '../shared/types';
-import { createVenomOrchestrator } from '../createVenomOrchestrator';
+import { createVenomOrchestrator } from '../../orchestration/createVenomOrchestrator';
 import {
     createDefaultVenomSettings,
     getVenomSettingsPath,

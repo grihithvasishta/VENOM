@@ -1,23 +1,51 @@
+// ─── Core types ───────────────────────────────────────────────────────────────
 export * from './shared/types';
+
+// ─── Config ───────────────────────────────────────────────────────────────────
 export * from './config/VenomSettings';
-export * from './createVenomOrchestrator';
+
+// ─── Providers ────────────────────────────────────────────────────────────────
 export * from './providers/VenomProviderManager';
+
+// ─── Agents ───────────────────────────────────────────────────────────────────
 export * from './agents/VenomAgentRegistry';
-export * from './orchestration/VenomOrchestrator';
-export * from './orchestration/router/VenomRouter';
-export * from './orchestration/planner/VenomPlanner';
-export * from './orchestration/scheduler/VenomScheduler';
-export * from './orchestration/coordinator/VenomCoordinator';
-export * from './orchestration/validator/VenomValidator';
-export * from './orchestration/execution/VenomExecutionEngine';
-export * from './orchestration/recovery/VenomRecovery';
-export * from './orchestration/memory-sync/VenomMemorySync';
-export * from './orchestration/telemetry/VenomTelemetry';
-export * from './orchestration/tools/VenomToolCallParser';
+
+// ─── Memory ───────────────────────────────────────────────────────────────────
 export * from './memory/VenomWorkingMemory';
 export * from './memory/VenomProjectMemory';
 export * from './memory/VenomLearningMemory';
 export * from './memory/VenomKnowledgeGraph';
+
+// ─── Tools / Runtime ─────────────────────────────────────────────────────────
 export * from './tools/VenomShellRuntime';
 export * from './browser/VenomBrowserRuntime';
+
+// ─── Telegram ─────────────────────────────────────────────────────────────────
 export * from './telegram/VenomTelegramGateway';
+
+// ─── Orchestration (root-level package — NOT in src/) ────────────────────────
+export {
+  VenomOrchestrator,
+  createVenomOrchestrator,
+  VenomTelemetry,
+  VenomMemorySync,
+  RouterWorker,
+  PlannerWorker,
+  ExecutorWorker,
+  ValidatorWorker,
+  AssemblerWorker,
+  WriterWorker,
+} from '../orchestration';
+export type {
+  CreateVenomOrchestratorOptions,
+  PipelineType,
+  WriterTopic,
+  AgentType,
+  VenomPlan,
+  VenomPlanStep,
+  VenomStepResult,
+  ToolExecutionResult,
+  ValidationResult,
+  AssemblyResult,
+  VenomTelemetryEvent,
+} from '../orchestration';

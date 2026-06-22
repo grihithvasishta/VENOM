@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="/grihithvasishta/VENOM/blob/main/assets/logo.svg">
-    <img src="https://github.com/grihithvasishta/VENOM/raw/main/assets/logo.svg" alt="VENOM Logo" />
-  </a>
+  <img src="assets/logo.png" alt="VENOM Logo" width="300" />
 </p>
 
 # VENOM AI Operating System
@@ -22,8 +20,8 @@ The pitch is simple: most agent frameworks make you fight their abstractions to 
 
 ### Key Features
 
-- **Multi-agent orchestration** — dedicated Router, Planner, Coordinator, Scheduler, and Validator engines, each responsible for one part of the pipeline instead of one model doing everything.
-- **Four-tier memory system** — backed by `better-sqlite3`, split into Working Memory, Project Memory, Learning Memory, and a Knowledge Graph, so short-term context and long-term project history don't get mixed together.
+- **Multi-agent orchestration** — dedicated Router, Planner, Executor, Validator, Assembler, and Writer workers, each responsible for one part of the pipeline instead of one model doing everything.
+- **Four-tier memory system** — backed by `better-sqlite3`, split into Working Memory, Project Memory, Learning Memory, and a Knowledge Graph, so short-term context and long-term project history don't get mixed together. All integrated seamlessly via `VenomMemorySync`.
 - **Local execution environment** — agents can write files, run shell commands, and drive a real browser through Puppeteer, all on your machine.
 - **Telegram-native interface** — trigger code generation and system queries from your phone, not just a terminal.
 - **CLI-first** — a full terminal application for anyone who'd rather not leave the command line.

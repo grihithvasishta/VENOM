@@ -1,5 +1,5 @@
 import { Telegraf } from 'telegraf';
-import { VenomOrchestrator } from '../orchestration/VenomOrchestrator';
+import { VenomOrchestrator } from '../../orchestration/VenomOrchestrator';
 import { AgentMode } from '../shared/types';
 import dotenv from 'dotenv';
 
