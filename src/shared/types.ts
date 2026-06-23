@@ -1,6 +1,7 @@
 export enum AgentMode {
   NORMAL = 'NORMAL',
   FABLE5 = 'FABLE5', // Full Agent Mode
+  FABLE5_CODE = 'FABLE5_CODE', // Full Agent Mode + /code pipeline (5-stage)
   FABLEFOFF = 'FABLEFOFF', // Direct Mode
   WRITE = 'WRITE' // Writing Mode
 }

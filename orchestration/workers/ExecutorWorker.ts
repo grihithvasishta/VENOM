@@ -18,8 +18,6 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import fs from 'fs';
-import path from 'path';
 import { VenomAgentRegistry } from '../../src/agents/VenomAgentRegistry';
 import { VenomShellRuntime } from '../../src/tools/VenomShellRuntime';
 import { VenomBrowserRuntime } from '../../src/browser/VenomBrowserRuntime';
@@ -75,15 +73,7 @@ export class ExecutorWorker {
       return this.errorResult(step, start, `Agent "${step.agentType}" is not registered.`);
     }
 
-    let systemPrompt = AGENT_SYSTEM_PROMPTS[step.agentType];
-    
-    // Inject Fable 5 prompt for CodingAgent specifically, as requested
-    if (step.agentType === 'CodingAgent') {
-      const fable5Path = path.join(process.cwd(), 'system-prompts', 'fable5.md');
-      if (fs.existsSync(fable5Path)) {
-        systemPrompt += `\n\n[CRITICAL BEHAVIOR CONTEXT]\n${fs.readFileSync(fable5Path, 'utf8')}`;
-      }
-    }
+    const systemPrompt = AGENT_SYSTEM_PROMPTS[step.agentType];
 
     const userPrompt = context
       ? `${context}\n\nTask: ${step.description}`

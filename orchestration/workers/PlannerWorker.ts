@@ -13,8 +13,6 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import fs from 'fs';
-import path from 'path';
 import { VenomAgentRegistry } from '../../src/agents/VenomAgentRegistry';
 import { VenomTelemetry } from '../telemetry/VenomTelemetry';
 import { PLANNER_SYSTEM_PROMPT } from '../prompts/orchestrationPrompts';
@@ -51,12 +49,7 @@ export class PlannerWorker {
     try {
       this.telemetry.logStage('PlannerWorker', 'Calling PlanningAgent to generate plan...');
 
-      let systemPrompt = PLANNER_SYSTEM_PROMPT;
-      const fable5Path = path.join(process.cwd(), 'system-prompts', 'fable5.md');
-      if (fs.existsSync(fable5Path)) {
-        this.telemetry.logStage('PlannerWorker', 'Loaded external Fable 5 prompt context.');
-        systemPrompt += `\n\n[CRITICAL BEHAVIOR CONTEXT]\n${fs.readFileSync(fable5Path, 'utf8')}`;
-      }
+      const systemPrompt = PLANNER_SYSTEM_PROMPT;
 
       const prompt = context
         ? `${context}\n\nTask:\n"${input}"`

@@ -19,6 +19,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import fs from 'fs';
+import path from 'path';
 import { VenomAgentRegistry } from '../src/agents/VenomAgentRegistry';
 import { AgentMode, VenomMessage } from '../src/shared/types';
 import { VenomTelemetry } from './telemetry/VenomTelemetry';
@@ -33,6 +35,13 @@ import { AssemblerWorker } from './workers/AssemblerWorker';
 import { WriterWorker } from './workers/WriterWorker';
 
 import { VenomPlan, VenomStepResult } from './types/orchestrationTypes';
+import {
+  NEMOTRON_PLANNING_PROMPT,
+  KIMI_CODING_PROMPT,
+  KIMI_REFINE_PROMPT,
+  LLAMA_DOCUMENTER_PROMPT,
+  CODE_DELIVERY_PROMPT,
+} from './prompts/orchestrationPrompts';
 
 export class VenomOrchestrator {
   /** Exposed so the CLI/Telegram can toggle thinking mode. */
@@ -64,6 +73,10 @@ export class VenomOrchestrator {
     let result: string;
 
     switch (pipeline) {
+      case 'CODE':
+        result = await this.codePipeline(input, context);
+        break;
+
       case 'WRITE':
         result = await this.writePipeline(input, context);
         break;
@@ -193,5 +206,92 @@ export class VenomOrchestrator {
       groups.get(step.priority)!.push(step);
     }
     return new Map([...groups.entries()].sort(([a], [b]) => a - b));
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════════
+  // PIPELINE: CODE (5-stage /code pipeline)
+  // Nemotron plans → Kimi codes → Kimi refines (fable5) → Llama docs → MainAgent delivers
+  // ═════════════════════════════════════════════════════════════════════════════
+
+  private async codePipeline(input: string, context: string): Promise<string> {
+    this.telemetry.logStage('Pipeline:CODE', 'Starting 5-stage /code pipeline.');
+
+    // ── Stage 1: PLAN (Nemotron) ────────────────────────────────────────────────
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 1 → PlanningAgent (Nemotron): Planning...');
+    const planningAgent = this.registry.getAgent('PlanningAgent');
+    if (!planningAgent) throw new Error('PlanningAgent is not registered.');
+
+    const planPrompt = context
+      ? `${context}\n\nCoding Task:\n"${input}"`
+      : `Coding Task:\n"${input}"`;
+
+    const planOutput = await planningAgent.execute(planPrompt, [
+      { role: 'system', content: NEMOTRON_PLANNING_PROMPT },
+    ]);
+    this.telemetry.logStage('Pipeline:CODE', `Stage 1 complete: Plan received (${planOutput.length} chars).`);
+
+    // ── Stage 2: CODE (Kimi) ─────────────────────────────────────────────────
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 2 → CodingAgent (Kimi): Coding...');
+    const codingAgent = this.registry.getAgent('CodingAgent');
+    if (!codingAgent) throw new Error('CodingAgent is not registered.');
+
+    const codePrompt = `Implement the following plan as production-ready code:\n\n${planOutput}`;
+
+    const codeOutput = await codingAgent.execute(codePrompt, [
+      { role: 'system', content: KIMI_CODING_PROMPT },
+    ]);
+    this.telemetry.logStage('Pipeline:CODE', `Stage 2 complete: Code generated (${codeOutput.length} chars).`);
+
+    // ── Stage 3: REFINE (Kimi + fable5.md) ──────────────────────────────────
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 3 → CodingAgent (Kimi): Refining with fable5 rules...');
+
+    let fable5Content = '';
+    const fable5Path = path.join(process.cwd(), 'system-prompts', 'fable5.md');
+    try {
+      if (fs.existsSync(fable5Path)) {
+        fable5Content = fs.readFileSync(fable5Path, 'utf8');
+        this.telemetry.logStage('Pipeline:CODE', `Loaded fable5.md (${fable5Content.length} chars).`);
+      }
+    } catch {
+      this.telemetry.logStage('Pipeline:CODE', 'fable5.md not found — skipping refinement rules.');
+    }
+
+    let refinedCode: string;
+    if (fable5Content) {
+      const refinePrompt = `[CODE TO REVIEW]\n${codeOutput}\n\n[BEHAVIORAL RULES]\n${fable5Content}`;
+      refinedCode = await codingAgent.execute(refinePrompt, [
+        { role: 'system', content: KIMI_REFINE_PROMPT },
+      ]);
+      this.telemetry.logStage('Pipeline:CODE', `Stage 3 complete: Code refined (${refinedCode.length} chars).`);
+    } else {
+      refinedCode = codeOutput;
+      this.telemetry.logStage('Pipeline:CODE', 'Stage 3 skipped (no fable5 rules).');
+    }
+
+    // ── Stage 4: DOCUMENT (Llama 70B) ───────────────────────────────────────
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 4 → MultiPurposeAgent (Llama 70B): Documenting...');
+    const docAgent = this.registry.getAgent('MultiPurposeAgent');
+    if (!docAgent) throw new Error('MultiPurposeAgent is not registered.');
+
+    const docPrompt = `Original request: "${input}"\n\nFinalized code:\n${refinedCode}`;
+
+    const documentation = await docAgent.execute(docPrompt, [
+      { role: 'system', content: LLAMA_DOCUMENTER_PROMPT },
+    ]);
+    this.telemetry.logStage('Pipeline:CODE', `Stage 4 complete: Documentation generated (${documentation.length} chars).`);
+
+    // ── Stage 5: DELIVER (MainAgent) ────────────────────────────────────────
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 5 → MainAgent: Delivering to user...');
+    const mainAgent = this.registry.getAgent('MainAgent');
+    if (!mainAgent) throw new Error('MainAgent is not registered.');
+
+    const deliveryPrompt = `Deliver this coding result to the user:\n\n${documentation}`;
+
+    const finalResponse = await mainAgent.execute(deliveryPrompt, [
+      { role: 'system', content: CODE_DELIVERY_PROMPT },
+    ]);
+    this.telemetry.logStage('Pipeline:CODE', 'Stage 5 complete: Response delivered.');
+
+    return finalResponse;
   }
 }

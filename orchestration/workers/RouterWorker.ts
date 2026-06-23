@@ -12,7 +12,7 @@ import { AgentMode } from '../../src/shared/types';
 import { VenomTelemetry } from '../telemetry/VenomTelemetry';
 import { ROUTER_SYSTEM_PROMPT } from '../prompts/orchestrationPrompts';
 
-export type PipelineType = 'DIRECT' | 'AGENT' | 'WRITE';
+export type PipelineType = 'DIRECT' | 'AGENT' | 'WRITE' | 'CODE';
 
 export class RouterWorker {
   constructor(
@@ -30,6 +30,10 @@ export class RouterWorker {
    */
   async route(input: string, mode: AgentMode): Promise<PipelineType> {
     // Explicit modes bypass the LLM entirely
+    if (mode === AgentMode.FABLE5_CODE) {
+      this.telemetry.logStage('RouterWorker', 'Explicit FABLE5_CODE → CODE pipeline (5-stage).');
+      return 'CODE';
+    }
     if (mode === AgentMode.FABLE5) {
       this.telemetry.logStage('RouterWorker', 'Explicit FABLE5 → AGENT pipeline.');
       return 'AGENT';

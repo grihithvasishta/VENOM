@@ -61,9 +61,19 @@ export class VenomTelegramGateway {
                 }
 
                 // Clean the input
-                const input = ctx.message.text.replace('think=gs', '').trim();
-                const mode = this.chatModes.get(String(ctx.chat?.id ?? ctx.from?.id ?? 'global')) ?? AgentMode.NORMAL;
+                let input = ctx.message.text.replace('think=gs', '').trim();
+                let mode = this.chatModes.get(String(ctx.chat?.id ?? ctx.from?.id ?? 'global')) ?? AgentMode.NORMAL;
                 
+                // Detect /code prefix — triggers 5-stage code pipeline when in FABLE5 mode
+                if (mode === AgentMode.FABLE5 && input.startsWith('/code')) {
+                    input = input.replace(/^\/code\s*/i, '').trim();
+                    if (!input) {
+                        await ctx.reply('Please provide a coding task after /code. Example: /code build a REST API for todo items');
+                        return;
+                    }
+                    mode = AgentMode.FABLE5_CODE;
+                }
+
                 // Let orchestrator handle the logic
                 const response = await this.orchestrator.execute(input, mode);
                 await this.replyInChunks(ctx, response);
